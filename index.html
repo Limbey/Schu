@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Schedule App</title>
+    <style>
+      body {
+    font-family: Arial, sans-serif;
+    background: url('https://example.com/path-to-cr7-image.jpg') no-repeat center center fixed;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 600px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2em;
+}
+
+.schedule {
+    display: flex;
+    flex-direction: column;
+}
+
+.hour-block {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.time-input, .task-input {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.time-input {
+    width: 100px;
+}
+
+.task-input {
+    flex: 1;
+}
+
+.delete-btn {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#add-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    display: block;
+    width: 100%;
+}
+
+.delete-btn:hover, #add-btn:hover {
+    opacity: 0.8;
+}
+
+.background-changer {
+    margin-top: 20px;
+    text-align: center;
+}
+
+#background-input {
+    margin-top: 10px;
+}
+
+/* Media Queries */
+@media (max-width: 600px) {
+    .hour-block {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .time-input {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .task-input {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .delete-btn {
+        width: 100%;
+    }
+
+    #add-btn {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 400px) {
+    h1 {
+        font-size: 1.5em;
+    }
+}
+
+    </style>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+    const schedule = document.getElementById('schedule');
+    const addBtn = document.getElementById('add-btn');
+    const backgroundInput = document.getElementById('background-input');
+
+    addBtn.addEventListener('click', function () {
+        const hourBlock = document.createElement('div');
+        hourBlock.classList.add('hour-block');
+
+        const timeInput = document.createElement('input');
+        timeInput.type = 'time';
+        timeInput.classList.add('time-input');
+
+        const taskInput = document.createElement('input');
+        taskInput.type = 'text';
+        taskInput.classList.add('task-input');
+        taskInput.placeholder = 'Enter task...';
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.classList.add('delete-btn');
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.addEventListener('click', function () {
+            hourBlock.remove();
+        });
+
+        hourBlock.appendChild(timeInput);
+        hourBlock.appendChild(taskInput);
+        hourBlock.appendChild(deleteBtn);
+
+        schedule.appendChild(hourBlock);
+    });
+
+    document.querySelectorAll('.delete-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            btn.parentElement.remove();
+        });
+    });
+
+    backgroundInput.addEventListener('change', function (event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.body.style.backgroundImage = `url(${e.target.result})`;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    if (Notification.permission !== 'granted') {
+        Notification.requestPermission();
+    }
+
+    function checkTasks() {
+        const now = new Date();
+        const currentTime = now.toTimeString().slice(0, 5);
+        document.querySelectorAll('.hour-block').forEach(block => {
+            const timeInput = block.querySelector('.time-input').value;
+            const taskInput = block.querySelector('.task-input').value;
+            if (timeInput === currentTime) {
+                showNotification(taskInput || 'Scheduled Task');
+            }
+        });
+    }
+
+    function showNotification(message) {
+        if (Notification.permission === 'granted') {
+            new Notification(message);
+        }
+    }
+
+    setInterval(checkTasks, 60000); // Check every minute
+});
+
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Daily Schedule</h1>
+        <div class="schedule" id="schedule">
+            <div class="hour-block">
+                <input type="time" class="time-input" value="08:00">
+                <input type="text" class="task-input" placeholder="Enter task...">
+                <button class="delete-btn">Delete</button>
+            </div>
+        </div>
+        <button id="add-btn">Add More</button>
+        <div class="background-changer">
+            <label for="background-input">Change Background:</label>
+            <input type="file" id="background-input" accept="image/*">
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
